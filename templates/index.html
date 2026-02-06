@@ -11,21 +11,29 @@
     <title>Página Inicial</title>
 </head>
 <body>
+    <div class="Pesquisar">
+        <img src="https://static.vecteezy.com/system/resources/thumbnails/042/066/721/small/ai-generated-cartoon-cute-dinosaur-icon-character-free-png.png" alt="icone site">
+        <h1>DinoShop</h1>
+    </div>
     <input type="text" class="barra-pesquisa" placeholder="Pesquisar">
     <div class="align">
         {% for produto in produtos %}
-        <div class="produto">
-            <img src="{{produto['imagem']}}" alt="produto">
-            <p class="nome-produto">{{produto['nome']}}</p>
-            <p class="preco-produto">{{produto['preco']}}</p>
-        </div>
+            <a href="#" class="produto">
+                <img src="{{produto['imagem']}}" alt="produto">
+                <p class="nome-produto">{{produto['nome']}}</p>
+                <p class="preco-produto">{{produto['preco']}}</p>
+            </a>
         {% endfor %}
     </div>
 
     <div class="rodape">
         <a href=""><i class="bi bi-house-fill"></i></a>
         <a href=""><i class="bi bi-bag-fill"></i></a>
-        <a href=""><i class="bi bi-person-circle"></i></a>
+        {% if current_user.is_authenticated %}
+        <a href="/conta"><i class="bi bi-person-circle"></i></a>
+        {% else %}
+        <a href="/cadastro"><i class="bi bi-box-arrow-in-right"></i></a>
+        {% endif %}
     </div>
 </body>
 </html>
