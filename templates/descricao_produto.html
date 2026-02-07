@@ -5,6 +5,6 @@
         <img src="{{produto['imagem']}}" alt="produto">
         <p class="preco-produto">{{produto['preco']}}R$</p>
         <p class="descricao-produto">{{produto['descricao']}}</p>
-        <a href="/adicionar-carrinho" class="submit-carrinho">Adicionar ao carrinho</a>
+        <a href="/adicionar-carrinho/{{produto['id']}}" class="submit-carrinho">Adicionar ao carrinho</a>
     </div>
 {% endblock %}
