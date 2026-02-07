@@ -23,7 +23,10 @@ def cadastro():
         senha = request.form['senha']
         df = pd.read_csv('data/dados.csv')
         if email not in df['email'].astype(str).tolist():
-            df = pd.concat([df,pd.DataFrame({'nome':[nome],'email':[email],'senha':[senha]})],ignore_index=True)
+            if len(df) == 0:
+                df = pd.concat([df,pd.DataFrame({"id":[0],"nome":[nome],"email":[email],"senha":[senha]})],ignore_index=True)
+            else:
+                df = pd.concat([df,pd.DataFrame({"id":[df['id'].max() + 1],"nome":[nome],"email":[email],"senha":[senha]})],ignore_index=True)
             df.to_csv('data/dados.csv',index=False)
             user = User(email=email)
             login_user(user)
@@ -49,6 +52,11 @@ def login():
             return redirect(url_for('login'))
     return render_template('login.html')
 
+@app.route('/descricao/<int:id>')
+def descricao(id):
+    df = pd.read_csv('data/banco.csv')
+    produto = df[df['id'] == id].to_dict('records')[0]
+    return render_template('descricao_produto.html',produto=produto)
 @login_manager.user_loader
 def load_user(user_id):
     if user_id is None:

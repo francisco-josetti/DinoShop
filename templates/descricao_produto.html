@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="desc-produto">
+        <h1>{{produto['nome']}}</h1>
+        <img src="{{produto['imagem']}}" alt="produto">
+        <p class="preco-produto">{{produto['preco']}}R$</p>
+        <p class="descricao-produto">{{produto['descricao']}}</p>
+        <a href="/adicionar-carrinho" class="submit-carrinho">Adicionar ao carrinho</a>
+    </div>
+{% endblock %}
