@@ -5,6 +5,13 @@
         <img src="{{produto['imagem']}}" alt="produto">
         <p class="preco-produto">{{produto['preco']}}R$</p>
         <p class="descricao-produto">{{produto['descricao']}}</p>
-        <a href="/adicionar-carrinho/{{produto['id']}}" class="submit-carrinho">Adicionar ao carrinho</a>
+        {% if quantidade > 0 %}
+        <form action="/adicionar-carrinho/{{produto['id']}}" method="get">
+            <input type="number" name="quantidade" min="1" max="10" value="1">
+            <input type="submit" value="Adicionar ao carrinho" class="submit-carrinho">
+        </form>
+        {% else %}
+        <p>Produto indisponivel</p>
+        {% endif %}
     </div>
 {% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="carrinho">
+        <h1>Seu carrinho</h1>
+        {% if produtos %}
+        {% for produto in produtos %}
+            <div class="produto-carrinho">
+                <img src="{{produto['imagem']}}" alt="produto">
+                <p class="nome-produto-carrinho">{{produto['nome']}}</p>
+                <p class="preco-produto-carrinho">{{produto['preco']}}R$</p>
+            </div>
+        {% endfor %}
+        {% else %}
+            <p>Seu carrinho está vazio</p>
+        {% endif %}
+    </div>
+{% endblock %}

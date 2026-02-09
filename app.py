@@ -3,12 +3,17 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 import sqlite3
 import pandas as pd
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 app = Flask(__name__)
+
+UPLOAD_FOLDER = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 app.config['SECRET_KEY'] = 'mysecretkey'
 class User(UserMixin):
-    def __init__(self,email):
+    def __init__(self,id,nome, email):
         self.id = id
+        self.nome = nome
         self.email = email
 
 login_manager = LoginManager()
@@ -17,8 +22,9 @@ login_manager.init_app(app)
 def init_db():
     connect = sqlite3.connect('data/dados.db')
     cursor = connect.cursor()
-    cursor.execute('CREATE TABLE IF NOT EXISTS dados (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT NOT NULL, email TEXT NOT NULL UNIQUE, senha TEXT NOT NULL)')
-    cursor.execute('CREATE TABLE IF NOT EXISTS produtos (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT NOT NULL, preco REAL NOT NULL, descricao TEXT NOT NULL, imagem TEXT NOT NULL, usuario_id INTEGER NOT NULL, FOREIGN KEY (usuario_id) REFERENCES dados (id) ON DELETE CASCADE)')
+    cursor.execute('''CREATE TABLE IF NOT EXISTS dados (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT NOT NULL, email TEXT NOT NULL UNIQUE, senha TEXT NOT NULL)''')
+    cursor.execute('''CREATE TABLE IF NOT EXISTS produtos (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT NOT NULL, preco REAL NOT NULL, descricao TEXT NOT NULL, imagem TEXT NOT NULL, usuario_id INTEGER NOT NULL, quantidade INTEGER NOT NULL, FOREIGN KEY (usuario_id) REFERENCES dados (id) ON DELETE CASCADE)''')
+    cursor.execute('''CREATE TABLE IF NOT EXISTS carrinho (id INTEGER PRIMARY KEY AUTOINCREMENT, produto_id INTEGER NOT NULL, usuario_id INTEGER NOT NULL, quantidade INTEGER NOT NULL, preco REAL NOT NULL, FOREIGN KEY (produto_id) REFERENCES produtos (id) ON DELETE CASCADE, FOREIGN KEY (usuario_id) REFERENCES dados (id) ON DELETE CASCADE)''')
     connect.commit()
     connect.close()
 
@@ -43,8 +49,9 @@ def cadastro():
         cursor = connect.cursor()
         cursor.execute('INSERT INTO dados (nome,email,senha) VALUES (?,?,?)',(nome,email,senha_criptografada))
         connect.commit()
+        user_id = cursor.lastrowid
         connect.close()
-        user = User(email)
+        user = User(user_id, nome, email)
         login_user(user)
         return redirect(url_for('index'))
     return render_template('cadastro.html')
@@ -55,18 +62,21 @@ def login():
         email = request.form['email']
         senha = request.form['senha']
         connect = sqlite3.connect('data/dados.db')
+        connect.row_factory = sqlite3.Row
         cursor = connect.cursor()
         cursor.execute('SELECT * FROM dados WHERE email=?',(email,))
         user = cursor.fetchone()
         connect.close()
         if user:
             if check_password_hash(user['senha'],senha):
-                user = User(user['email'])
+                user = User(user['id'],user['nome'],user['email'])
                 login_user(user)
                 return redirect(url_for('index'))
             else:
                 flash('Email ou senha incorretos')
                 return redirect(url_for('login'))
+    else:
+        return render_template('login.html')
 
 @app.route('/descricao/<int:id>')
 def descricao(id):
@@ -91,18 +101,59 @@ def pesquisa():
 
 @app.route('/adicionar-carrinho/<int:id>')
 def adicionar_carrinho(id):
+    if current_user.is_authenticated:
+        if request.method == 'GET':
+            if request.args.get('quantidade'):
+                quantidade = request.args.get('quantidade')
+            else:
+                quantidade = 1
+                quantidade = request.args.get('quantidade')
+                connect = sqlite3.connect('data/dados.db')
+                cursor = connect.cursor()
+                cursor.execute('SELECT * FROM produtos WHERE id=?',(id,))
+                produto = cursor.fetchone()
+                if produto['quantidade'] >= int(quantidade):
+                    cursor.execute('INSERT INTO carrinho (produto_id,usuario_id,quantidade,preco) VALUES (?,?,?,?)',(produto['id'],current_user.id,quantidade,produto['preco']))
+                    connect.commit()
+                    connect.close()
+                    return render_template('descricao_produto.html',produto=produto)
+@login_required
+@app.route('/carrinho')
+def carrinho():
     connect = sqlite3.connect('data/dados.db')
+    connect.row_factory = sqlite3.Row
     cursor = connect.cursor()
-    cursor.execute('SELECT * FROM produtos WHERE id=?',(id,))
-    produto = cursor.fetchone()
+    cursor.execute('SELECT * FROM carrinho WHERE usuario_id=?',(current_user.id,))
+    produtos = cursor.fetchall()
     connect.close()
-    return render_template('descricao_produto.html',produto=produto)
-    
+    return render_template('carrinho.html',produtos=produtos)
+
+@app.route('/conta')
+@login_required
+def conta():
+    return render_template('conta.html',user=current_user)
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+@app.route('/vender')
+def vender():
+    return render_template('vender.html')
 @login_manager.user_loader
 def load_user(user_id):
-    if user_id is None:
-        return None
-    return User(user_id)
+    connect = sqlite3.connect('data/dados.db')
+    connect.row_factory = sqlite3.Row
+    cursor = connect.cursor()
+    cursor.execute('SELECT * FROM dados WHERE id=?', (user_id,))
+    user = cursor.fetchone()
+    connect.close()
+
+    if user:
+        return User(user['id'], user['nome'], user['email'])
+    return None
+
 
 if __name__ == '__main__':
     init_db()
