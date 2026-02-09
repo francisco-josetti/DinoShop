@@ -4,6 +4,7 @@ import sqlite3
 import pandas as pd
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
+import os
 app = Flask(__name__)
 
 UPLOAD_FOLDER = 'static/uploads'
@@ -107,16 +108,16 @@ def adicionar_carrinho(id):
                 quantidade = request.args.get('quantidade')
             else:
                 quantidade = 1
-                quantidade = request.args.get('quantidade')
-                connect = sqlite3.connect('data/dados.db')
-                cursor = connect.cursor()
-                cursor.execute('SELECT * FROM produtos WHERE id=?',(id,))
-                produto = cursor.fetchone()
-                if produto['quantidade'] >= int(quantidade):
-                    cursor.execute('INSERT INTO carrinho (produto_id,usuario_id,quantidade,preco) VALUES (?,?,?,?)',(produto['id'],current_user.id,quantidade,produto['preco']))
-                    connect.commit()
-                    connect.close()
-                    return render_template('descricao_produto.html',produto=produto)
+            connect = sqlite3.connect('data/dados.db')
+            cursor = connect.cursor()
+            cursor.row_factory = sqlite3.Row
+            cursor.execute('SELECT * FROM produtos WHERE id=?',(id,))
+            produto = cursor.fetchone()
+            if produto['quantidade'] >= int(quantidade):
+                cursor.execute('INSERT INTO carrinho (produto_id,usuario_id,quantidade,preco,nome) VALUES (?,?,?,?,?)',(produto['id'],current_user.id,quantidade,produto['preco'],produto['nome']))
+                connect.commit()
+                connect.close()
+                return render_template('descricao_produto.html',produto=produto)
 @login_required
 @app.route('/carrinho')
 def carrinho():
@@ -127,7 +128,23 @@ def carrinho():
     produtos = cursor.fetchall()
     connect.close()
     return render_template('carrinho.html',produtos=produtos)
+@app.route('/carrinho/remover/<int:id>')
+def remover_carrinho(id):
+    connect = sqlite3.connect('data/dados.db')
+    cursor = connect.cursor()
+    cursor.execute('DELETE FROM carrinho WHERE id=?',(id,))
+    connect.commit()
+    connect.close()
+    return redirect(url_for('carrinho'))
 
+@app.route('/carrinho/limpar-carrinho')
+def limpar_carrinho():
+    connect = sqlite3.connect('data/dados.db')
+    cursor = connect.cursor()
+    cursor.execute('DELETE FROM carrinho WHERE usuario_id=?',(current_user.id,))
+    connect.commit()
+    connect.close()
+    return redirect(url_for('carrinho'))
 @app.route('/conta')
 @login_required
 def conta():
@@ -138,8 +155,23 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-@app.route('/vender')
+@login_required
+@app.route('/vender', methods=['GET', 'POST'])
 def vender():
+    if request.method == 'POST':
+        nome = request.form['nome']
+        preco = request.form['preco']
+        descricao = request.form['descricao']
+        quantidade = request.form['quantidade']
+        imagem = request.files['imagem']
+        imagem_salva = secure_filename(imagem.filename)
+        imagem.save(os.path.join(app.config['UPLOAD_FOLDER'],imagem_salva))
+        connect = sqlite3.connect('data/dados.db')
+        cursor = connect.cursor()
+        cursor.execute('INSERT INTO produtos (nome,preco,descricao,quantidade,imagem,usuario_id) VALUES (?,?,?,?,?,?)',(nome,preco,descricao,quantidade,imagem_salva,current_user.id))
+        connect.commit()
+        connect.close()
+        return redirect(url_for('index'))
     return render_template('vender.html')
 @login_manager.user_loader
 def load_user(user_id):

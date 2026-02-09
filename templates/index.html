@@ -3,7 +3,7 @@
     <div class="align">
         {% for produto in produtos %}
             <a href="/descricao/{{produto['id']}}" class="produto">
-                <img src="{{produto['imagem']}}" alt="produto">
+                <img src="{{url_for('static',filename='uploads/' + produto['imagem'])}}" alt="produto">
                 <p class="nome-produto">{{produto['nome']}}</p>
                 <p class="preco-produto">{{produto['preco']}}R$</p>
             </a>

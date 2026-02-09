@@ -1,17 +1,22 @@
 {% extends 'base.html' %}
 {% block content %}
     <div class="carrinho">
-        <h1>Seu carrinho</h1>
+        <h1>Seu carrinho <i class="bi bi-cart"></i></h1>
         {% if produtos %}
-        {% for produto in produtos %}
-            <div class="produto-carrinho">
-                <img src="{{produto['imagem']}}" alt="produto">
-                <p class="nome-produto-carrinho">{{produto['nome']}}</p>
-                <p class="preco-produto-carrinho">{{produto['preco']}}R$</p>
+            {% for produto in produtos %}
+                <div class="produtos-carrinho">
+                    <p class="nome-produto-carrinho">{{produto['nome']}}</p>
+                    <p class="preco-produto-carrinho">{{produto['preco']}}R$</p>
+                    <p class="quantidade-produto-carrinho">Quantidade: {{produto['quantidade']}}</p>
+                    <a href="/carrinho/remover/{{produto['id']}}"><i class="bi bi-trash"></i></a>
+                </div>
+            {% endfor %}
+            <div class="botao-acao">
+                <a href="/carrinho/limpar-carrinho" class="vermelho">Limpar</a>
+                <a href="/carrinho/finalizar-compra" class="verde">Finalizar</a>
             </div>
-        {% endfor %}
         {% else %}
-            <p>Seu carrinho está vazio</p>
+            <p>Seu carrinho esta vazio</p>
         {% endif %}
     </div>
 {% endblock %}

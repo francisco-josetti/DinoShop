@@ -1,14 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
     <div class="desc-produto">
+        <img src="{{url_for('static',filename='uploads/' + produto['imagem'])}}" alt="produto">
         <h1>{{produto['nome']}}</h1>
-        <img src="{{produto['imagem']}}" alt="produto">
         <p class="preco-produto">{{produto['preco']}}R$</p>
         <p class="descricao-produto">{{produto['descricao']}}</p>
-        {% if quantidade > 0 %}
+        {% if produto['quantidade'] > 0 %}
         <form action="/adicionar-carrinho/{{produto['id']}}" method="get">
-            <input type="number" name="quantidade" min="1" max="10" value="1">
-            <input type="submit" value="Adicionar ao carrinho" class="submit-carrinho">
+            <div class="adicionar">
+                <input type="number" name="quantidade" min="1" max="10" value="1" class="qtd">
+                <input type="submit" value="Adicionar ao carrinho" class="submit-carrinho">
+            </div>
         </form>
         {% else %}
         <p>Produto indisponivel</p>

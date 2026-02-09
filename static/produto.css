@@ -27,6 +27,8 @@ body{
 
 .desc-produto img{
     width: 100%;
+    border-radius: 30px;
+    height: 300px;
 }
 
 .desc-produto p{
@@ -60,7 +62,7 @@ body{
     margin: 10px;
     width: 200px;
     text-align: center;
-    border-radius: 30px;
+    border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
     background-color: #333;
     color: #f8f8f8;
@@ -68,6 +70,8 @@ body{
     text-decoration: none;
     transition: all 0.2s ease-in-out;
     gap: 30px;
+    border: none;
+    margin-left: 0;
 }
 
 .desc-produto .submit-carrinho:hover{
@@ -85,4 +89,23 @@ body{
     font-size: 1.2rem;
     margin: 0.5rem;
     color: #333;
+}
+
+.adicionar{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.adicionar .qtd{
+    width: 20%;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+    border: none;
+    text-align: center;
+    height: 40px;
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin: 0.5rem;
+    color: #333
 }
