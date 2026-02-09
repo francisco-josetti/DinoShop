@@ -24,5 +24,7 @@ HtML e CSS: Estilo e interatividade
 <br>
 SQLite: Banco de dados
 
+### Método de funcionamento
+Clone o repositório e instale o que está no requirements.txt
 ### Sobre o site
 DinoShop é um marketplace criado por mim com a intenção de treinar meus conhecimentos na programação.
