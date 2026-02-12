@@ -12,10 +12,11 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 app.config['SECRET_KEY'] = 'mysecretkey'
 class User(UserMixin):
-    def __init__(self,id,nome, email):
+    def __init__(self,id,nome, email,foto=None):
         self.id = id
         self.nome = nome
         self.email = email
+        self.foto = foto
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -173,6 +174,22 @@ def vender():
         connect.close()
         return redirect(url_for('index'))
     return render_template('vender.html')
+
+@login_required
+@app.route('/editar-perfil', methods=['GET', 'POST'])
+def editar_perfil():
+    if request.method == 'POST':
+        nome = request.form['nome']
+        foto = request.files['foto']
+        foto_salva = secure_filename(foto.filename)
+        foto.save(os.path.join(app.config['UPLOAD_FOLDER'],foto_salva))
+        connect = sqlite3.connect('data/dados.db')
+        cursor = connect.cursor()
+        cursor.execute('UPDATE dados SET nome=?,foto=? WHERE id=?', (nome, foto_salva, current_user.id))
+        connect.commit()
+        connect.close()
+        return redirect(url_for('conta'))
+    return render_template('editar_perfil.html', user=current_user)
 @login_manager.user_loader
 def load_user(user_id):
     connect = sqlite3.connect('data/dados.db')
@@ -183,8 +200,9 @@ def load_user(user_id):
     connect.close()
 
     if user:
-        return User(user['id'], user['nome'], user['email'])
+        return User(user['id'], user['nome'], user['email'], user['foto'])
     return None
+
 
 
 if __name__ == '__main__':

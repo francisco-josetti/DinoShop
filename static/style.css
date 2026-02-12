@@ -18,7 +18,8 @@ body{
 .produto{
     padding: 10px;
     margin: 10px;
-    width: 300px;
+    width: 9rem;
+    height: 14.5rem;
     text-align: center;
     border-radius: 30px;
     box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
@@ -27,7 +28,7 @@ body{
 .produto img{
     width: 100%;
     border-radius: 30px;
-    height: 300px;
+    height: 100px;
 }
 
 .produto :active{
@@ -106,12 +107,17 @@ body{
 }
 
 .produto p{
-    font-weight: 600;
-    font-size: 1.2rem;
+    font-weight: 500;
+    font-size: 2.8vh;
     margin: 0.5rem;
     color: #333;
+    height: 20%;
 }
 
+.produto .nome-produto{
+    font-weight: 300;
+    font-size: 2.3vh;
+}
 .produto:hover{
     color: #f8f8f8;
     transition: all 0.2s ease-in-out;
@@ -244,4 +250,14 @@ body{
 
 .quantidade-produto-carrinho{
     width: 20%;
+}
+
+@media screen and (min-height: 860px){
+    .produto .preco-produto{
+        font-size: 1.5vh;
+    }
+
+    .produto p{
+        height: 25%;
+    }
 }
