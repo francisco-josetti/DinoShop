@@ -1,6 +1,7 @@
 # DinoShop
 ## Página Inicial
-<img width="383" height="667" alt="swappy-20260207_183329" src="https://github.com/user-attachments/assets/117f73a9-2339-488f-8cd9-61b80136fcfd" />
+<img width="298" height="530" alt="swappy-20260212_020310" src="https://github.com/user-attachments/assets/618545e7-dba0-4df3-ac41-b4f114737318" />
+
 
 ## Descrição do produto
 <img width="376" height="667" alt="swappy-20260209_160836" src="https://github.com/user-attachments/assets/fe27ea81-a558-4947-b70e-159a0b633acd" />
@@ -13,6 +14,10 @@
 
 ## Conta
 <img width="375" height="667" alt="swappy-20260209_160754" src="https://github.com/user-attachments/assets/5726db6c-b152-4235-b095-b06dea09af72" />
+
+## Editar Perfil
+<img width="298" height="533" alt="swappy-20260212_014916" src="https://github.com/user-attachments/assets/aa0ff0bc-af4a-4f81-a3af-27aeddf2053a" />
+
 
 ## Informações Adicionais
 ### Tecnologias utilizadas🔨
